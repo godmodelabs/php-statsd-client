@@ -5,7 +5,7 @@
  * 
  * sends statistics to StatsD over UDP
  * 
- * @author Julian Gruber <jgruber@boerse-go.de>
+ * @author Julian Gruber <julian@juliangruber.com>
  */
 
 class StatsD {
