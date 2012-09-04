@@ -11,6 +11,7 @@
 class StatsD {
   
   private $host;
+  private $timers;
   
   /**
    * The class constructor
@@ -32,6 +33,17 @@ class StatsD {
    */
   public function timing($stat, $time, $sampleRate=1) {
     $this->send(array($stat => "$time|ms"), $sampleRate);
+  }
+  
+  public function start($stat) {
+    $this->timers[$stat] = microtime(true);
+  }
+  
+  public function stop($stat, $sampleRate=1) {
+    $dt = microtime(true) - $this->timers[$stat];
+    $dt *= 1000;
+    $dt = round($dt);
+    $this->timing($stat, $dt, $sampleRate);
   }
   
   /**
@@ -86,12 +98,15 @@ class StatsD {
    * @param float|1 $sampleRate The rate (0..1) for sampling
    */
   public function send($data, $sampleRate=1) {
-    if ($sampleRate < 1) $data = getSampledData($data);
+    if ($sampleRate < 1) $data = StatsD::getSampledData($data, $sampleRate);
     if (empty($data)) return;
     try {
       $fp = fsockopen("udp://$this->host", 8125);
       if (!$fp) return;
-      foreach ($data as $stat=>$value) fwrite($fp, "$stat:$value");
+      foreach ($data as $stat=>$value) {
+        fwrite($fp, "$stat:$value");
+        echo "$stat:$value";
+      }
       fclose($fp);
     } catch(Exception $e) {};
   }
@@ -104,7 +119,7 @@ class StatsD {
    * @param  float $sampleRate   The rate (0..1) for sampling
    * @return array               Sampled data
    */
-  private function getSampledData($data, $sampleRate) {
+  private static function getSampledData($data, $sampleRate) {
     $sampledData = array();
     foreach ($data as $stat=>$value) {
       if (mt_rand(0, 1) <= $sampleRate) $sampledData[$stat] = "$value|@$sampleRate";
