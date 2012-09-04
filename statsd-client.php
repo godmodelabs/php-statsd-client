@@ -35,17 +35,30 @@ class StatsD {
     $this->send(array($stat => "$time|ms"), $sampleRate);
   }
   
+  /**
+   * More convenient timing function
+   * Starts timer
+   *
+   * @param string $stat The metric to log timing for
+   */
   public function start($stat) {
     $this->timers[$stat] = microtime(true);
   }
-  
+
+  /**
+   * More convenient timing function
+   * Stops timer and logs to StatsD
+   *
+   * @param string  $stat       The metric to log timing for
+   * @param float|1 $sampleRate The rate (0..1) for sampling
+   */
   public function stop($stat, $sampleRate=1) {
     $dt = microtime(true) - $this->timers[$stat];
     $dt *= 1000;
     $dt = round($dt);
     $this->timing($stat, $dt, $sampleRate);
   }
-  
+
   /**
    * Log arbitrary values
    *
@@ -110,7 +123,7 @@ class StatsD {
       fclose($fp);
     } catch(Exception $e) {};
   }
-  
+
   /**
    * Throw out data based on $sampleRate
    * 
