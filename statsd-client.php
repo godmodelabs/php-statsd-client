@@ -116,10 +116,7 @@ class StatsD {
     try {
       $fp = fsockopen("udp://$this->host", 8125);
       if (!$fp) return;
-      foreach ($data as $stat=>$value) {
-        fwrite($fp, "$stat:$value");
-        echo "$stat:$value";
-      }
+      foreach ($data as $stat=>$value) fwrite($fp, "$stat:$value");
       fclose($fp);
     } catch(Exception $e) {};
   }
