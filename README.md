@@ -7,7 +7,7 @@ Usage
 -----
 
 ```php
-require('statsd-client.php');
+include_once 'statsd-client.php';
 $log = new StatsD('localhost');       // insert StatsD hostname
 
 $log->timing('pageload', 123);        // in miliseconds
