@@ -45,12 +45,12 @@ More convenient timing function: Stops timer and logs to StatsD
 ### $log->increment($stats [, $sampleRate])
 Increment the counter(s) at `$stats` by 1.
 
-The parameter `stat` can either a `string` or an `array`, in case you want to log the same data to different _stats_.
+The parameter `$stats` can either a `string` or an `array`, in case you want to log the same data to different _stats_.
 
 ### $log->decrement($stats [, $sampleRate])
 Decrement the counter(s) at `$stats` by 1.
 
-The parameter `stat` can either a `string` or an `array`, in case you want to log the same data to different _stats_.
+The parameter `$stats` can either a `string` or an `array`, in case you want to log the same data to different _stats_.
 
 ### $log->gauge($stat, $value [, $sampleRate])
 Set the gauge at `$stat` to `$value`.
