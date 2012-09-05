@@ -16,22 +16,22 @@ class StatsD {
   /**
    * The class constructor
    * 
-   * @throws NoHostnameException
-   * @param string $host StatsD's hostname
+   * @constructor
+   * @param string [$host='localhost'] StatsD's hostname
    */
   public function __construct($host) {
-    if (!isset($host)) throw new Exception('StatsD hostname not provided (eg. `localhost`)');
+    if (!isset($host)) $host = 'localhost';
     $this->host = $host;
   }
 
   /**
-   * Log timing information
+   * Log `$time` in milliseconds to `$stat`.
    *
-   * @param string  $stat       The metric to log timing for
-   * @param float   $time       The time to log
-   * @param float|1 $sampleRate The rate (0..1) for sampling
+   * @param string  $stat
+   * @param float   $time
+   * @param float   [$sampleRate]
    */
-  public function timing($stat, $time, $sampleRate=1) {
+  public function timing($stat, $time, $sampleRate) {
     $this->send(array($stat => "$time|ms"), $sampleRate);
   }
   
@@ -39,7 +39,7 @@ class StatsD {
    * More convenient timing function
    * Starts timer
    *
-   * @param string $stat The metric to log timing for
+   * @param string $stat
    */
   public function start($stat) {
     $this->timers[$stat] = microtime(true);
@@ -49,10 +49,10 @@ class StatsD {
    * More convenient timing function
    * Stops timer and logs to StatsD
    *
-   * @param string  $stat       The metric to log timing for
-   * @param float|1 $sampleRate The rate (0..1) for sampling
+   * @param string  $stat
+   * @param float   [$sampleRate]
    */
-  public function stop($stat, $sampleRate=1) {
+  public function stop($stat, $sampleRate) {
     $dt = microtime(true) - $this->timers[$stat];
     $dt *= 1000;
     $dt = round($dt);
@@ -60,44 +60,44 @@ class StatsD {
   }
 
   /**
-   * Log arbitrary values
+   * Set the gauge at `$stat` to `$value`.
    *
-   * @param string  $stat       The metric to log values for
-   * @param float   $value      The value to log
-   * @param float|1 $sampleRate The rate (0..1) for sampling
+   * @param string  $stat
+   * @param float   $value
+   * @param float   [$sampleRate]
    */
-  public function gauge($stat, $value, $sampleRate=1) {
+  public function gauge($stat, $value, $sampleRate) {
     $this->send(array($stat => "$value|g"), $sampleRate);
   }
 
   /**
-   * Increment one or more counters
+   * Increment the counter(s) at `$stats` by 1.
    *
-   * @param string|array  $stats      The metric(s) to increment
-   * @param float|1       $sampleRate The rate (0..1) for sampling
+   * @param string|string[] $stats
+   * @param float           [$sampleRate]
    */
-  public function increment($stats, $sampleRate=1) {
+  public function increment($stats, $sampleRate) {
     $this->updateStats($stats, 1, $sampleRate);
   }
 
   /**
-   * Decrement one or more stats counters.
+   * Decrement the counter(s) at `$stats` by 1.
    *
-   * @param string|array  $stats      The metric(s) to decrement
-   * @param float|1       $sampleRate The rate (0..1) for sampling
+   * @param string|string[] $stats
+   * @param float           [$sampleRate]
    */
-  public function decrement($stats, $sampleRate=1) {
+  public function decrement($stats, $sampleRate) {
     $this->updateStats($stats, -1, $sampleRate);
   }
 
   /**
-   * Update one or more stats counters by arbitrary amounts.
+   * Update one or more stats counters with arbitrary deltas.
    *
-   * @param string|array  $stats      The metric(s) to update
-   * @param int|1         $delta      The amount to increment/decrement each metric by
-   * @param float|1       $sampleRate The rate (0..1) for sampling
+   * @param string|string[] $stats
+   * @param int             [$delta=1]
+   * @param float           [$sampleRate]
    */
-  public function updateStats($stats, $delta=1, $sampleRate=1) {
+  public function updateStats($stats, $delta=1, $sampleRate) {
     if (!is_array($stats)) $stats = array($stats);
     $data = array();
     foreach($stats as $stat) $data[$stat] = "$delta|c";
@@ -105,10 +105,10 @@ class StatsD {
   }
 
   /**
-   * Transmit the metrics over UDP
+   * Transmit the metrics in `$data` over UDP
    * 
-   * @param array   $data       Data to transmit
-   * @param float|1 $sampleRate The rate (0..1) for sampling
+   * @param string[]  $data
+   * @param float     [$sampleRate=1]
    */
   public function send($data, $sampleRate=1) {
     if ($sampleRate < 1) $data = StatsD::getSampledData($data, $sampleRate);
@@ -122,17 +122,19 @@ class StatsD {
   }
 
   /**
-   * Throw out data based on $sampleRate
+   * Throw out data based on `$sampleRate`
    * 
    * @internal
-   * @param  array $data         Data to sample
-   * @param  float $sampleRate   The rate (0..1) for sampling
-   * @return array               Sampled data
+   * @param  string[] $data
+   * @param  float    $sampleRate
+   * @return string[]
    */
   private static function getSampledData($data, $sampleRate) {
     $sampledData = array();
     foreach ($data as $stat=>$value) {
-      if (mt_rand(0, 1) <= $sampleRate) $sampledData[$stat] = "$value|@$sampleRate";
+      if (mt_rand(0, 1) <= $sampleRate) {
+        $sampledData[$stat] = "$value|@$sampleRate";
+      }
     }
     return $sampledData;
   }

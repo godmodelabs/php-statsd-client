@@ -24,6 +24,37 @@ $log->decrement('users', 0.2);        // supports sampling as well
 $log->gauge('cpu-usage', 30, 0.2);    // gauges with sampling work too
 ```
 
+API
+---
+
+If you specify a sampleRate (between 0 and 1) StatsD doesn't get hit on every
+log event in order to reduce load but samples up the events that get through so the stats stay correct.
+
+### new StatsD([$hostname='localhost'])
+Returns an instance of the StatsD client bound to `hostname`, from now on referred to as `log`.
+
+### $log->timing($stat, $time [, $sampleRate])
+Log `$time` in milliseconds to `$stat`.
+
+### $log->start($stat)
+More convenient timing function: Starts timer
+
+### $log->stop($stat [, $sampleRate])
+More convenient timing function: Stops timer and logs to StatsD
+
+### $log->increment($stats [, $sampleRate])
+Increment the counter(s) at `$stats` by 1.
+
+The parameter `stat` can either a `string` or an `array`, in case you want to log the same data to different _stats_.
+
+### $log->decrement($stats [, $sampleRate])
+Decrement the counter(s) at `$stats` by 1.
+
+The parameter `stat` can either a `string` or an `array`, in case you want to log the same data to different _stats_.
+
+### $log->gauge($stat, $value [, $sampleRate])
+Set the gauge at `$stat` to `$value`.
+
 License
 -------
 (MIT)
