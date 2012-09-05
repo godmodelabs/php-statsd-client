@@ -7,8 +7,8 @@ Usage
 -----
 
 ```php
-include_once 'statsd-client.php';
-$log = new StatsD('localhost');       // insert StatsD hostname
+include_once 'lib/StatsD/Client.php'; // or have the SplClassLoader do this
+$log = new \StatsD\Client('localhost'); // insert StatsD hostname
 
 $log->timing('pageload', 123);        // in miliseconds
 $log->timing('pageload', 123, 0.5);   // supports sampling
@@ -30,7 +30,7 @@ API
 If you specify a sampleRate (between 0 and 1) StatsD doesn't get hit on every
 log event in order to reduce load but samples up the events that get through so the stats stay correct.
 
-### new StatsD([$hostname='localhost'])
+### new \StatsD\Client([$hostname='localhost'])
 Returns an instance of the StatsD client bound to `hostname`, from now on referred to as `log`.
 
 ### $log->timing($stat, $time [, $sampleRate])
