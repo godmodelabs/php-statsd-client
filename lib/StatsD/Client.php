@@ -1,5 +1,7 @@
 <?php
 
+namespace StatsD;
+
 /**
  * PHP StatsD Client
  * 
@@ -30,7 +32,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-class StatsD {
+class Client {
   
   private $host;
   private $timers;
