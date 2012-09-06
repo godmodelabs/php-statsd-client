@@ -7,21 +7,21 @@ Usage
 -----
 
 ```php
-include_once 'lib/StatsD/Client.php'; // or have the SplClassLoader do this
-$log = new \StatsD\Client('localhost'); // insert StatsD hostname
+include_once 'lib/StatsD/Client.php'; 			// or have the SplClassLoader do this
+$log = new \StatsD\Client('localhost:8125'); 	// insert StatsD hostname
 
-$log->timing('pageload', 123);        // in miliseconds
-$log->timing('pageload', 123, 0.5);   // supports sampling
+$log->timing('pageload', 123);        			// in miliseconds
+$log->timing('pageload', 123, 0.5);   			// supports sampling
 
 $log->start('pageload');
 // do stuff
-$log->stop('pageload', 0.4);          // utility function (with sampling)
+$log->stop('pageload', 0.4);          			// utility function (with sampling)
 
 $log->increment('visits');
-$log->increment(['users', 'wins']);   // handles multiple stats at once
-$log->decrement('users', 0.2);        // supports sampling as well
+$log->increment(['users', 'wins']);   			// handles multiple stats at once
+$log->decrement('users', 0.2);        			// supports sampling as well
 
-$log->gauge('cpu-usage', 30, 0.2);    // gauges with sampling work too
+$log->gauge('cpu-usage', 30, 0.2);    			// gauges with sampling work too
 ```
 
 API
@@ -30,8 +30,8 @@ API
 If you specify a sampleRate (between 0 and 1) StatsD doesn't get hit on every
 log event in order to reduce load but samples up the events that get through so the stats stay correct.
 
-### new \StatsD\Client([$hostname='localhost'])
-Returns an instance of the StatsD client bound to `hostname`, from now on referred to as `log`.
+### new \StatsD\Client([$host='localhost'][, $port=8125])
+Returns an instance of the StatsD client bound to `$host:$port`, from now on referred to as `log`. `$host` can also contain the port, like `graphite.local:8125`.
 
 ### $log->timing($stat, $time [, $sampleRate])
 Log `$time` in milliseconds to `$stat`.

@@ -35,6 +35,7 @@ namespace StatsD;
 class Client {
   
   private $host;
+  private $port;
   private $timers;
   
   /**
@@ -43,9 +44,14 @@ class Client {
    * @constructor
    * @param string [$host='localhost'] StatsD's hostname
    */
-  public function __construct($host) {
-    if (!isset($host)) $host = 'localhost';
+  public function __construct($host='localhost', $port=8125) {
+    if (strpos($host, ':') !== false) {
+      $segs = explode(':', $host);
+      $host = $segs[0];
+      $port = $segs[1];
+    }
     $this->host = $host;
+    $this->port = $port;
   }
 
   /**
@@ -138,7 +144,7 @@ class Client {
     if ($sampleRate < 1) $data = StatsD::getSampledData($data, $sampleRate);
     if (empty($data)) return;
     try {
-      $fp = fsockopen("udp://$this->host", 8125);
+      $fp = fsockopen("udp://$this->host", $this->port);
       if (!$fp) return;
       foreach ($data as $stat=>$value) fwrite($fp, "$stat:$value");
       fclose($fp);
