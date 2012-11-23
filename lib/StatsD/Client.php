@@ -9,7 +9,7 @@ namespace StatsD;
  * 
  * @author Julian Gruber <julian@juliangruber.com>
  * @license MIT
- * @version 0.0.1
+ * @version 0.0.2
  * 
  * Copyright (c) 2012 Julian Gruber julian@juliangruber.com
  * 
@@ -62,7 +62,7 @@ class Client {
    * @param float   $time
    * @param float   [$sampleRate]
    */
-  public function timing($stat, $time, $sampleRate) {
+  public function timing($stat, $time, $sampleRate=1) {
     $this->send(array($stat => "$time|ms"), $sampleRate);
   }
   
@@ -83,7 +83,7 @@ class Client {
    * @param string  $stat
    * @param float   [$sampleRate]
    */
-  public function stop($stat, $sampleRate) {
+  public function stop($stat, $sampleRate=1) {
     $dt = microtime(true) - $this->timers[$stat];
     $dt *= 1000;
     $dt = round($dt);
@@ -97,7 +97,7 @@ class Client {
    * @param float   $value
    * @param float   [$sampleRate]
    */
-  public function gauge($stat, $value, $sampleRate) {
+  public function gauge($stat, $value, $sampleRate=1) {
     $this->send(array($stat => "$value|g"), $sampleRate);
   }
 
@@ -107,7 +107,7 @@ class Client {
    * @param string|string[] $stats
    * @param float           [$sampleRate]
    */
-  public function increment($stats, $sampleRate) {
+  public function increment($stats, $sampleRate=1) {
     $this->updateStats($stats, 1, $sampleRate);
   }
 
@@ -117,7 +117,7 @@ class Client {
    * @param string|string[] $stats
    * @param float           [$sampleRate]
    */
-  public function decrement($stats, $sampleRate) {
+  public function decrement($stats, $sampleRate=1) {
     $this->updateStats($stats, -1, $sampleRate);
   }
 
@@ -128,7 +128,7 @@ class Client {
    * @param int             [$delta=1]
    * @param float           [$sampleRate]
    */
-  public function updateStats($stats, $delta=1, $sampleRate) {
+  public function updateStats($stats, $delta=1, $sampleRate=1) {
     if (!is_array($stats)) $stats = array($stats);
     $data = array();
     foreach($stats as $stat) $data[$stat] = "$delta|c";
