@@ -9,6 +9,7 @@ namespace StatsD;
  * 
  * @author Julian Gruber <julian@juliangruber.com>
  * @license MIT
+ * @version 0.0.1
  * 
  * Copyright (c) 2012 Julian Gruber julian@juliangruber.com
  * 
